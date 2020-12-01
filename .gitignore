@@ -1,4 +1,5 @@
 
-part1/.DS_Store
-part0/.DS_Store
-part1/unicafe/.eslintcache
+*/.DS_Store
+*/*/.eslintcache
+*/*/node_modules/
+*/*/*vscode/
