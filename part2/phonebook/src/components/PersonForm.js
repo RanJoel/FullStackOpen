@@ -8,6 +8,7 @@ const PersonForm = ({
   setNewName,
   setNewNumber,
   setPersons,
+  setMessage,
 }) => {
   const addPerson = (event) => {
     event.preventDefault();
@@ -31,6 +32,20 @@ const PersonForm = ({
                 person.id !== found[0].id ? person : returnedObject
               )
             );
+            setMessage({ text: `Updated ${found[0].name}`, type: "notify" });
+            setTimeout(() => {
+              setMessage({});
+            }, 5000);
+          })
+          .catch((error) => {
+            setMessage({
+              text: `Information of ${found[0].name} has already been removed from server`,
+              type: "error",
+            });
+            setTimeout(() => {
+              setMessage({});
+            }, 5000);
+            setPersons(persons.filter((n) => n.id !== found[0].id));
           });
       }
     } else {
@@ -41,8 +56,12 @@ const PersonForm = ({
       personService.create(personObject).then((returnedObject) => {
         setPersons(persons.concat(returnedObject));
       });
+      setMessage({ text: `Added ${newName}`, type: "notify" });
       setNewName("");
       setNewNumber("");
+      setTimeout(() => {
+        setMessage({});
+      }, 5000);
     }
   };
 
