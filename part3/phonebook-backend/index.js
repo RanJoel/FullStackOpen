@@ -49,10 +49,6 @@ let persons = [
   },
 ];
 
-const generateId = () => {
-  return Math.floor(Math.random() * 1000 + 1);
-};
-
 ///////
 //GET//
 ///////
@@ -81,7 +77,7 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.get("/info", (request, response) => {
+app.get("/info", (request, response, next) => {
   let time = new Date();
 
   Person.find({})
@@ -100,11 +96,6 @@ app.get("/info", (request, response) => {
 app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
-  if (!(body.name && body.number)) {
-    return response.status(400).json({
-      error: "content missing",
-    });
-  }
   const result = persons.some(({ name }) => name === body.name);
   if (result) {
     return response.status(400).json({
@@ -150,7 +141,7 @@ app.put("/api/persons/:id", (request, response, next) => {
 
 app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error));
@@ -176,6 +167,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);

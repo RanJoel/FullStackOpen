@@ -53,10 +53,18 @@ const PersonForm = ({
         name: newName,
         number: newNumber,
       };
-      personService.create(personObject).then((returnedObject) => {
-        setPersons(persons.concat(returnedObject));
-      });
-      setMessage({ text: `Added ${newName}`, type: "notify" });
+      personService
+        .create(personObject)
+        .then((returnedObject) => {
+          setMessage({ text: `Added ${newName}`, type: "notify" });
+          setPersons(persons.concat(returnedObject));
+        })
+        .catch((error) => {
+          setMessage({
+            text: `${error.response.data.error}`,
+            type: "error",
+          });
+        });
       setNewName("");
       setNewNumber("");
       setTimeout(() => {
