@@ -1,7 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
+
+const Person = require("./models/person");
 
 app.use(cors());
 
@@ -55,19 +58,24 @@ app.get("/", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const found = persons.find((person) => {
+  Person.findById(request.params.id).then((person) => {
+    response.json(person);
+  });
+
+  /*const found = persons.find((person) => {
     return person.id === id;
   });
   if (found) {
     response.json(found);
   } else {
     response.status(404).end();
-  }
+  }*/
 });
 
 app.get("/info", (request, response) => {
@@ -92,15 +100,17 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId(),
-  };
+  });
 
-  persons = persons.concat(person);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
+  //persons = persons.concat(person);
 
-  response.json(person);
+  //response.json(person);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
