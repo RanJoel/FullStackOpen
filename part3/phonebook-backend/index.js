@@ -5,6 +5,8 @@ const app = express();
 
 app.use(cors());
 
+app.use(express.static("build"));
+
 morgan.token("data", function getId(req) {
   return req.str;
 });
