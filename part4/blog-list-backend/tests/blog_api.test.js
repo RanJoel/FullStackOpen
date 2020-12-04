@@ -23,12 +23,21 @@ const initialBlogs = [
   },
 ];
 
+let token = "";
+
 beforeEach(async () => {
   await Blog.deleteMany({});
   let blogObject = new Blog(initialBlogs[0]);
   await blogObject.save();
   blogObject = new Blog(initialBlogs[1]);
   await blogObject.save();
+
+  const response = await await api.post("/api/login/").send({
+    username: "tanapol",
+    password: "12345678",
+  });
+
+  token = response.body.token;
 });
 
 test("all notes are returned", async () => {
@@ -55,6 +64,7 @@ test("blog can be added", async () => {
 
   await api
     .post("/api/blogs")
+    .set("Authorization", `bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -64,6 +74,29 @@ test("blog can be added", async () => {
 
   const titles = response.body.map((blog) => blog.title);
   expect(titles).toContain("Canonical string reduction");
+});
+
+test("if there is no token, proper status code is shown", async () => {
+  const newBlog = {
+    _id: "5a422b3a1b54a676234d17f9",
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+    likes: 12,
+    __v: 0,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(401)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+  expect(response.body).toHaveLength(initialBlogs.length);
+
+  const titles = response.body.map((blog) => blog.title);
+  expect(titles).not.toContain("Canonical string reduction");
 });
 
 test("if likes value is missing a default value is set", async () => {
@@ -79,6 +112,7 @@ test("if likes value is missing a default value is set", async () => {
 
   await api
     .post("/api/blogs")
+    .set("Authorization", `bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
