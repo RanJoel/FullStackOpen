@@ -11,7 +11,7 @@ const Blog = ({ blog, setMessage, setBlogs, user }) => {
 
   //const hideWhenVisible = { display: showFullBlog ? "none" : "" };
   const showWhenVisible = { display: showFullBlog ? "" : "none" };
-  const showText = showFullBlog ? "view" : "show";
+  const showText = showFullBlog ? "hide" : "view";
 
   const blogStyle = {
     paddingTop: 10,
@@ -74,12 +74,14 @@ const Blog = ({ blog, setMessage, setBlogs, user }) => {
   return (
     <div style={blogStyle}>
       <div>
-        {blog.title} by {blog.author}
+        <div className="blog">
+          {blog.title} by {blog.author}
+        </div>
         <button type="button" onClick={toggleVisibility}>
           {showText}
         </button>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="hiddenBlog">
         <div>URL: {blog.url}</div>
         <div>
           Likes: {likes}{" "}
