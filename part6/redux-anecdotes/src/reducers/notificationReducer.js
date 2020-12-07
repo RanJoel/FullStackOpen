@@ -2,6 +2,8 @@ const initialState = "";
 
 const getId = () => (100000 * Math.random()).toFixed(0);
 
+var notificationID = "";
+
 const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
     case "NEW_NOTIFICATION":
@@ -31,8 +33,8 @@ export const displayNotification = (message, timeout) => {
     const action = newNotification(message);
 
     dispatch(action);
-
-    setTimeout(() => {
+    clearTimeout(notificationID);
+    notificationID = setTimeout(() => {
       dispatch(removeNotification());
     }, timeout);
   };
