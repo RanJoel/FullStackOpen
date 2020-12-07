@@ -20,22 +20,20 @@ export const newNotification = (message) => {
   };
 };
 
-export const removeNotification = (id) => {
+export const removeNotification = () => {
   return {
     type: "REMOVE_NOTIFICATION",
-    id,
   };
 };
 
-export const displayNotification = (message, timeout, level = "") => {
+export const displayNotification = (message, timeout) => {
   return (dispatch) => {
-    const action = newNotification(message, level);
-    const id = action.data.id;
+    const action = newNotification(message);
 
     dispatch(action);
 
     setTimeout(() => {
-      dispatch(removeNotification(id));
+      dispatch(removeNotification());
     }, timeout);
   };
 };
